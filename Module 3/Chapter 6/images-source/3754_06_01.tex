@@ -1,0 +1,115 @@
+\documentclass[tikz]{standalone}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+
+\usepackage{tikz}
+\usetikzlibrary{matrix,graphs,arrows,shadings,positioning}
+\usetikzlibrary{shapes.geometric,shapes.arrows,shapes.misc}
+\usetikzlibrary{backgrounds,fit,shadows}
+
+
+\begin{document}
+
+\begin{tikzpicture}[>=stealth',thick,draw]
+	\input{3754_styles.tex}
+	\begin{scope}[yshift=+1cm]
+	\matrix {
+		&
+		  % c1
+		|[branch](maint)| maint
+		& % c2
+		& % c3
+		& % c4
+		|[branch](master)| master
+		& % c5
+		& % c6
+		|[branch](next)| next \\
+		%
+		|[reflog,opacity=0](hspace)| unstable &
+		|(c1)| C1 &
+		|(c2)| C2 &
+		|(c3)| C3 &
+		|(c4)| C4 &
+		|(c5)| C5 &
+		|(c6)| C6 &
+		|[fake,opacity=0](hspace)| master \\
+	};
+	\graph [use existing nodes] {
+	    c1 <- c2 <- c3 <- c4 <- c5 <- c6;
+	    c1 <- maint;
+	    c4 <- master;
+	    c6 <- next;
+	};
+	\end{scope}
+	\begin{scope}[yshift=-3.1cm,
+		every matrix/.append style={row sep=1.0cm},
+		multi reflog/.style={
+			reflog,
+			align=center,
+			text width=1cm,
+			text depth=,
+			anchor=center,
+			yshift=0.2cm,
+		},
+		ll/.style={
+			opacity=0.5,
+			>=latex,
+		}]
+	\matrix {
+		|[multi reflog](maint)| very stable &
+		|(c1)| C1 &
+		& % c2
+		& % c3
+		& % c4
+		& % c5
+		& % c6
+		|[fake](x2)| maint \\
+		%
+		|[reflog](master)| stable &
+		& % c1
+		|(c2)| C2 &
+		|(c3)| C3 &
+		|(c4)| C4 &
+		& % c5
+		& % c6
+		|[fake](x5)| master \\
+		%
+		|[reflog](next)| unstable &
+		& % c1
+		& % c2
+		& % c3
+		& % c4
+		|(c5)| C5 &
+		|(c6)| C6 &
+		|[fake](x6)| next \\
+	};
+	\graph [use existing nodes] {
+		c1 <- c2 <- c3 <- c4 <- c5 <- c6;
+		maint ->[ll] master ->[ll] next;
+	};
+	\begin{scope} [on background layer,%
+		bkg/.style={
+			fill=purple!35,
+			draw=none,
+		},
+		every node/.style={
+			single arrow,
+			single arrow tip angle=60,
+			bkg,
+		}]
+		\node [fit=(c1)(x2)] (fmaint) {};
+		\node [fit=(c2)(x5)] (fmaster) {};
+		\node [fit=(c5)(x6)] (fnext) {};
+		%
+		\fill [bkg] % was: (fmaster.before tail)
+			(c1.south west) -- (fmaster.before tail) --
+			(c2.east) -- (c1.east) -- cycle;
+		\fill [bkg]
+			(c4.south west) -- (fnext.before tail) --
+			(c5.east) -- (c4.east) -- cycle;
+	\end{scope} % [on background layer]
+	\end{scope}
+\end{tikzpicture}
+\end{document}

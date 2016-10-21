@@ -1,0 +1,149 @@
+\documentclass[tikz]{standalone}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+
+\usepackage{tikz}
+\usetikzlibrary{matrix,graphs,arrows,shadings}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric,shapes.symbols,shapes.arrows,shapes.misc}
+\usetikzlibrary{backgrounds,fit,shadows}
+
+
+\begin{document}
+
+\begin{tikzpicture}[>=stealth',thick,draw]
+  \input{3754_styles.tex}
+  \tikzset{
+    every matrix/.append style={
+      % minimum width=1.2cm + column sep=0.6cm
+      column sep={1.8cm,between origins},
+    },
+    desc/.style={
+      %rectangle,fill=cyan!10,draw=orange!60,thin,% debug
+      align=center,
+    },
+    host/.style={
+      draw=black!75,
+      inner sep=2pt,
+      outer sep=2pt,
+      line width=1.5pt,
+      %fill=yellow!8, %debug
+    },
+    new commit/.style={
+      commit,
+      shadowmark=red!25,
+    },
+    old commit/.style={
+      commit,
+      fill=blue!30,
+    },
+    % repo/.append style={
+    %   aspect=0.8,
+    %   minimum height=0.8cm,
+    %   minimum width=1.0cm,
+    %   anchor=north west,
+    % },
+  };
+  \begin{scope}[yshift=+3.0cm,prefix=r]
+    \tikzset{
+      branch/.append style={
+        label=below:{public branch},
+      },
+    };
+    \matrix (remote) {
+      & % c1
+      & % c2
+      & % c3
+      & % c4
+        % c5
+      |[remote-tracking branch,opacity=0](hspace)| origin/master \\[-0.75cm]
+      %
+      |[old commit](c1)| 98ca9 &
+      |[old commit](c2)| 34ac2 &
+      |[old commit](c3)| f30ab &
+      |[new commit](c4)| c7cd3 &
+      |[new commit](c5)| 3fb00 \\
+      %
+      & % c1
+      & % c2
+      & % c3
+      & % c4
+      |[branch](master)| master \\ % c5
+    };
+    \graph [use existing nodes] {
+      c1 <- c2 <- c3 <- c4 <- c5 <- master;
+    };
+    \node [desc] (rdesc) [above=.2em of remote.north]
+          {``origin'' \\ \texttt{git.company.com}};
+    %
+    \begin{scope}[on background layer]
+      \node (remote-fit) [host,fit=(rdesc)(remote)] {};
+      % \node[bare repo=red!30,draw=red!30!black,
+      % below right=0.3cm and 0.4cm of remote-fit.north west] (rrepo) {};
+    \end{scope} % [on background layer]
+  \end{scope}
+  %
+  % -----------------------------------------------------------
+  %
+  \begin{scope}[yshift=-2.8cm,prefix=l]
+    \tikzset{
+      remote-tracking branch/.append style={
+        label=above:{remote-tracking branch},
+      },
+      branch/.append style={
+        label=below:{local branch},
+      },
+    };
+    \matrix (local) {
+      & % c1
+      & % c2
+      & % c3
+      & % c4
+      |[remote-tracking branch](rmaster)| origin/master \\ % c5
+      %
+      & % c1
+      & % c2
+      & % c3
+      |[new commit](c4)| c7cd3 &
+      |[new commit](c5)| 3fb00 \\
+      %
+      |[old commit](c1)| 98ca9 &
+      |[old commit](c2)| 34ac2 &
+      |[old commit](c3)| f30ab &
+      |(b4)| 317d4 &
+      |(b5)| 1f220 \\
+      %
+      & % c1
+      & % c2
+      & % c3
+      & % b4
+      |[current branch](master)| master \\ % b5
+    };
+    \graph [use existing nodes] {
+      c1 <- c2 <- c3 <- c4 <- c5 <- rmaster;
+      c1 <- c2 <- c3 <- b4 <- b5 <-  master;
+    };
+    \node [desc] (ldesc) [below=.2em of local.north]
+          {\textsf{My Computer}};
+    %
+    \begin{scope}[on background layer]
+      \node (local-fit) [host,fit=(ldesc)(local)] {};
+      % \node[nonbare repo=green!30,draw=green!30!black,
+      % below right=0.3cm and 0.4cm of local-fit.north west] (rrepo) {};
+    \end{scope} % [on background layer]
+  \end{scope}
+  %
+  % ..................................................
+  % connection
+  %
+  \begin{scope}[line width=4pt,red!20!black,>=latex]
+    \draw[->] (remote-fit) --
+    node[midway,yshift=+2pt,color=black,fill=white]
+    {\texttt{\textbf{git fetch} origin %
+             \textsl{+refs/heads/*:refs/remotes/origin/*}}}
+    (local-fit);
+  \end{scope}
+\end{tikzpicture}
+\end{document}

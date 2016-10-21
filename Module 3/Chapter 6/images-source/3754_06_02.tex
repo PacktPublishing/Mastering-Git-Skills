@@ -1,0 +1,118 @@
+\documentclass[tikz]{standalone}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+
+\usepackage{tikz}
+\usetikzlibrary{matrix,graphs,arrows,shadings,positioning}
+\usetikzlibrary{shapes.geometric,shapes.arrows,shapes.misc}
+\usetikzlibrary{backgrounds,fit,shadows}
+
+
+\begin{document}
+
+\begin{tikzpicture}[>=stealth',thick,draw]
+  \input{3754_styles.tex}
+  \tikzset{
+    % refs nodes
+    topic branch/.style={
+      branch,
+      label=above:{topic branch},
+      draw=olive!60!green!80!black,
+      fill=olive!60!green!20,
+    },
+    integration branch/.style={
+      branch,
+    },
+    merged/.style={
+      %opacity=0.9,
+    },
+    fully merged/.style={
+      merged,
+      opacity=0.7,
+    },
+    % commit nodes
+    merge/.style={
+      commit,
+      very thick,
+      fill=blue!30,
+    },
+    % reference -> commit
+    lref/.style={
+      >=latex,
+      densely dotted,
+    },
+  };
+  \matrix {
+    & & & &
+    |(f1)| c5b92 &
+    |(f2)| 6360b &[0.1cm]
+    |[topic branch](feat1)| feat \\
+    %
+    &
+    |[fake](x1)| &
+    &
+    |[merge](M2)| 06efb &
+    |[fake](y1)| &
+    &
+    |[integration branch](master)| master \\
+    %
+    |(M1)| 9453c &
+    |(h1)| b78b1 &
+    |(h2)| 98e28 &
+    & & &
+    |[topic branch,fully merged](feat2)| iss92 \\
+    %
+    &
+    |[fake](x2)| &
+    &
+    |[merge](N2)| cc831 &
+    |[merge](N3)| f245c &
+    |[fake](y2)| &
+    |[integration branch](next)| next \\
+    %
+    &
+    |(g1)| fe79c &
+    |(g2)| e0a9b &
+    |(g3)| 7f1dc &
+    & &
+    |[topic branch,merged](feat3)| idea \\
+  };
+  \graph [use existing nodes] {
+    % integration branches
+    M1 <- x1.center -- M2 <-[lref] master;
+    M1 <- x2.center -- N2 <- N3 <-[lref] next;
+    % feature branches
+    M2 <- f1 <- f2 <-[lref] feat1;
+    M1 <- h1 <- h2 <-[lref] feat2;
+    M1 <- g1 <- g2 <- g3 <-[lref] feat3;
+    % merges
+    h2 <- M2;
+    h2 <- N2;
+    g3 <- N3;
+  };
+  \begin{scope} [on background layer,%
+    bkg/.style={
+      fill=purple!15,
+      draw=purple!15,
+    },
+    every node/.style={
+      single arrow,
+      bkg,
+    }]
+    \node [fit=(x1)(y1)] (fmaster) {};
+    \node [fit=(x2)(y2)] (fnext) {};
+    \node [rectangle,fit=(M1)] (fork) {};
+    %
+    \fill [bkg] % was: (fmaster.before tail)
+      (M1.north west) --
+      (fmaster.after tail) -- (fmaster.before tail) --
+      (M1.east) -- cycle;
+    \fill [bkg]
+      (M1.south west) --
+      (fnext.before tail) -- (fnext.after tail) --
+      (M1.east) -- cycle;
+  \end{scope} % [on background layer]
+\end{tikzpicture}
+\end{document}
