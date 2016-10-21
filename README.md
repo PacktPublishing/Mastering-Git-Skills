@@ -4,16 +4,14 @@ By Packt
 
 ###What You Will Learn:
 
-* Solve practical real-world programming problems using PHP 7
-* Discover where and when PHP 5 code needs to be re-written to avoid backwards-compatibility breaks
-* Use advanced PHP 7 features such as the Abstract Syntax Tree, Uniform Variable Syntax, Scalar Type Hints, Generator Delegation,
-  Anonymous Classes, and the Context Sensitive Lexer
-* Set up a high performance development and production environment for PHP 7
-* Discover new OOP features in PHP 7 to achieve high performance
-* See how to improve the performance of your PHP applications and your database
-* Modernize your legacy application
-* Replace global and new dependency  with dependency injection
-* Convert action logic to controllers
+* Transport your work to a remote repository in a centralized manner
+* Experiment with your code without affecting functional code files
+* Explore some tools used to migrate to Git from other versioning systems without losing your development history
+* Understand the Git data model and how you can navigate the database with simple commands
+* Debug with Git and use various techniques to find faulty commits
+* Customize Git behavior system-wide, on a per-user, per-repository, and per-file basis
+* Master administering and setting up Git repositories, configuring access, finding and recovering from repository errors, and performing repository maintenance
+* Chose a workflow and configure/set up support for the chosen workflow
 
 ###Additional Info
 Module 1 doesn't have code bundle
